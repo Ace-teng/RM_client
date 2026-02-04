@@ -5,10 +5,17 @@ Phase 1：启动 QtPy 主窗口、创建 DataCenter。
 Phase 2：MQTT 连接、订阅、接收数据日志打印。
 数据流：comms → protocol → DataCenter → service → ui（见总文档 §6）。
 
-本地测试：加 --local 即连本机 MQTT(127.0.0.1:1883)，与 run_local_test.bat 行为一致。
+本地测试：加 --local 即连本机 MQTT(127.0.0.1:1883)。
 """
 import logging
+import os
 import sys
+
+# 必须在 import config 之前处理 --local，否则 config 会读到错误的默认值
+if "--local" in sys.argv:
+    sys.argv = [a for a in sys.argv if a != "--local"]
+    os.environ["REFEREE_MQTT_HOST"] = "127.0.0.1"
+    os.environ["REFEREE_MQTT_PORT"] = "1883"
 
 from qtpy.QtWidgets import QApplication
 
@@ -35,18 +42,8 @@ logging.basicConfig(
 
 def main() -> int:
     """创建应用、DataCenter、主窗口、MQTT 客户端并启动事件循环。"""
-    # --local：与本机 MQTT 连接(127.0.0.1:1883)，与 run_local_test.bat 一致；从 argv 移除避免 Qt 报错
-    if "--local" in sys.argv:
-        sys.argv = [a for a in sys.argv if a != "--local"]
-        import os
-        os.environ["REFEREE_MQTT_HOST"] = "127.0.0.1"
-        os.environ["REFEREE_MQTT_PORT"] = "1883"
-        # 重新从环境变量读取（config 已 import，需覆盖后再次取值）
-        _mqtt_host = os.environ.get("REFEREE_MQTT_HOST", "192.168.12.1")
-        _mqtt_port = int(os.environ.get("REFEREE_MQTT_PORT", "3333"))
-    else:
-        _mqtt_host = REFEREE_MQTT_HOST
-        _mqtt_port = REFEREE_MQTT_PORT
+    _mqtt_host = REFEREE_MQTT_HOST
+    _mqtt_port = REFEREE_MQTT_PORT
 
     app = QApplication(sys.argv)
     app.setApplicationName("RoboMaster 自定义客户端")
@@ -55,21 +52,25 @@ def main() -> int:
     # 单例数据中心（R-ARCH-002 唯一数据源）
     dc = DataCenter()
 
-    window = MainWindow()
-    window.show()
+    # Phase 5：注入占位 robot_states，便于态势图展示；协议接入后由 protocol 覆盖
+    from rm_client.core.service.demo_data import inject_demo_robot_states
+    inject_demo_robot_states()
 
-    # Phase 2：赛事 MQTT 连接与订阅；Phase 3：comms → protocol → DataCenter
+    window_ref = [None]
+
     def on_mqtt_connect() -> None:
-        window.set_status_message("就绪 | DataCenter 已创建 | MQTT 已连接")
+        if window_ref[0]:
+            window_ref[0].set_status_message("就绪 | DataCenter 已创建 | MQTT 已连接")
 
     def on_mqtt_disconnect() -> None:
-        window.set_status_message("就绪 | DataCenter 已创建 | MQTT 未连接")
+        if window_ref[0]:
+            window_ref[0].set_status_message("就绪 | DataCenter 已创建 | MQTT 未连接")
 
     def on_mqtt_message(topic: str, payload: bytes) -> None:
-        # 通信层只传 (topic, payload)；协议层解析并写入 DataCenter（R-ARCH-003）
         parse_referee_message(topic, payload, dc)
         logging.getLogger("rm_client").debug("MQTT [%s] %d bytes -> protocol", topic, len(payload))
 
+    logging.getLogger("rm_client").info("MQTT 目标: %s:%s", _mqtt_host, _mqtt_port)
     mqtt_client = RefereeMQTTClient(
         _mqtt_host,
         _mqtt_port,
@@ -78,8 +79,27 @@ def main() -> int:
         on_message_cb=on_mqtt_message,
         on_disconnect_cb=on_mqtt_disconnect,
     )
-    window.set_status_message("就绪 | DataCenter 已创建 | MQTT 连接中…")
     mqtt_client.start(connect_timeout=REFEREE_MQTT_CONNECT_TIMEOUT)
+
+    # Phase 6：赛事指令发送（需在 mqtt_client 创建后，MainWindow 创建前）
+    from rm_client.core.service.command_sender import CommandSender
+    command_sender = CommandSender(publish_fn=mqtt_client.publish)
+
+    window = MainWindow(command_sender=command_sender)
+    window_ref[0] = window
+    # 若 MQTT 在窗口创建前已连接成功，on_connect 时 window 未就绪会漏更新，此处补检
+    if mqtt_client.is_connected:
+        window.set_status_message("就绪 | DataCenter 已创建 | MQTT 已连接")
+    else:
+        window.set_status_message("就绪 | DataCenter 已创建 | MQTT 连接中…")
+
+    # Phase 7：加载插件
+    from rm_client.plugins.interface import PluginContext
+    from rm_client.plugins.loader import load_plugins
+    plugin_ctx = PluginContext(dc=dc, main_window=window, command_sender=command_sender)
+    load_plugins(plugin_ctx)
+
+    window.show()
 
     # Phase 4：图传 UDP 接收，协议层解析后写入 DataCenter.video_frame
     def on_video_udp(raw: bytes) -> None:

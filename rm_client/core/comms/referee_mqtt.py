@@ -83,3 +83,16 @@ class RefereeMQTTClient:
     @property
     def is_connected(self) -> bool:
         return self._connected
+
+    def publish(self, topic: str, payload: bytes, qos: int = 0) -> bool:
+        """发布消息。未连接时忽略并返回 False。"""
+        if not self._client or not self._connected:
+            logger.debug("MQTT 未连接，跳过 publish [%s]", topic)
+            return False
+        try:
+            self._client.publish(topic, payload, qos=qos)
+            logger.info("MQTT 发送 [%s] len=%d", topic, len(payload))
+            return True
+        except Exception as e:
+            logger.warning("MQTT publish 失败: %s", e)
+            return False

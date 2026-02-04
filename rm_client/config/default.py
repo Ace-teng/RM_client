@@ -18,6 +18,11 @@ REFEREE_MQTT_TOPICS = [
 # Phase 3 协议层：GameStatus 消息对应 Topic（占位，以赛事通信协议为准）
 REFEREE_TOPIC_GAME_STATUS = os.environ.get("REFEREE_TOPIC_GAME_STATUS", "game/status")
 
+# Phase 6 赛事指令 Topic（占位，以赛事通信协议为准）
+REFEREE_TOPIC_CMD_PERFORMANCE = "command/performance_mode"
+REFEREE_TOPIC_CMD_AMMO = "command/ammo_exchange"
+REFEREE_TOPIC_CMD_AIR_SUPPORT = "command/air_support"
+
 # 连接超时（秒）
 REFEREE_MQTT_CONNECT_TIMEOUT = 10
 
