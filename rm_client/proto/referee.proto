@@ -1,0 +1,11 @@
+// 占位：赛事协议以《RoboMaster 通信协议》为准，此处仅用于 Phase 3 打通解析链路。
+// 正式开发时用官方 .proto 替换并重新 gen。
+syntax = "proto3";
+
+package rm_referee;
+
+// 占位消息：赛事状态（实际字段以赛事文档为准）
+message GameStatus {
+  uint32 game_phase = 1;
+  int64  remaining_time_sec = 2;
+}

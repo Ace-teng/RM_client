@@ -67,14 +67,84 @@ rm_client/
 git clone https://github.com/Ace-teng/RM_client.git
 cd RM_client
 
-# 依赖（Python 3.10+、QtPy、paho-mqtt、protobuf 等，按实际补充）
-# pip install -r requirements.txt
+# 依赖（Python 3.10+）
+pip install -r requirements.txt
 
-# 运行（待实现后启用）
-# python rm_client/main.py
+# 运行（Phase 1：QtPy 主窗口 + DataCenter 已可启动）
+# 必须用 -m 从项目根目录运行，否则会报 No module named 'rm_client'
+python -m rm_client.main
 ```
 
-**前置：** 需具备 RoboMaster 赛事通信协议文档（.proto 与 Topic 定义）；图传为 HEVC，需解码库支持。
+**说明：** 请在**仓库根目录**（即与 `rm_client`、`docs` 同级）下执行上述命令；**必须用 `python -m rm_client.main`**，不要用 `python rm_client/main.py`（会报 `No module named 'rm_client'`）。Phase 1 将弹出主窗口（中心图传区占位 + 右侧控制面板占位 + 状态栏）。
+
+**Qt 绑定说明：** QtPy 只是封装层，必须再安装**一个** Qt 绑定，否则会报 `QtBindingsNotFoundError`。`requirements.txt` 已默认带上 PyQt6；若你本机只有 Qt5，可改为安装 PyQt5 或 PySide2：
+
+```powershell
+# 方案 A：用 Qt6（推荐，已写在 requirements.txt）
+pip install -r requirements.txt
+
+# 方案 B：只用 Qt5
+pip install QtPy PyQt5
+```
+
+**如何测试（PowerShell）：**
+
+```powershell
+# 1. 进入项目根目录
+cd "E:\大二寒假\robo寒假备赛\客户端开发"
+
+# 2. 安装依赖（含 QtPy + 至少一个绑定，见上）
+pip install -r requirements.txt
+
+# 3. 运行（必须用 -m，否则报 No module named 'rm_client'）
+python -m rm_client.main
+```
+
+若已安装多个绑定，可指定使用哪一个（在运行前设置环境变量）：
+
+```powershell
+$env:QT_API = "pyqt6"   # 或 pyqt5 / pyside6 / pyside2
+python -m rm_client.main
+```
+
+**前置：** Phase 2+ 需具备 RoboMaster 赛事通信协议文档（.proto 与 Topic 定义）；图传为 HEVC，需解码库支持。
+
+---
+
+## 开发环境自测 MQTT（确保赛场可用）
+
+开发机没有 192.168.12.1 的赛事引擎，可**在本机起一个 MQTT broker**，用环境变量把客户端指到本机，验证「连接 → 订阅 → 收包 → 打日志」整条链路。**到赛场不改代码**，不设环境变量即自动用 192.168.12.1:3333。
+
+**步骤一：本机安装并启动 MQTT broker**
+
+- **Windows：** 安装 [Mosquitto](https://mosquitto.org/download/) 后，在命令行运行 `mosquitto -p 1883`（默认端口 1883）。
+- **或用 Docker：** `docker run -d -p 1883:1883 eclipse-mosquitto`。
+
+**步骤二：用本机 broker 跑客户端**
+
+PowerShell：
+
+```powershell
+cd "E:\大二寒假\robo寒假备赛\客户端开发"
+$env:REFEREE_MQTT_HOST = "127.0.0.1"
+$env:REFEREE_MQTT_PORT = "1883"
+python -m rm_client.main
+```
+
+或直接双击 **`run_local_test.bat`**（已写好上述环境变量并启动客户端）。
+
+**步骤三：发一条测试消息**
+
+再开一个终端，用 Mosquitto 自带的发布工具（或任意 MQTT 客户端）往任意 topic 发一条消息，例如：
+
+```powershell
+# 若安装了 Mosquitto，可执行（在 broker 本机）：
+mosquitto_pub -h 127.0.0.1 -p 1883 -t "test/topic" -m "hello"
+```
+
+客户端控制台应出现类似：`收到 [test/topic] N bytes`，状态栏为「MQTT 已连接」。
+
+**结论：** 本地能连上、能收包打日志，说明 MQTT 代码路径正确；到赛场接好网、不设 `REFEREE_MQTT_*`，即用默认 192.168.12.1:3333，即可与赛事引擎通信。
 
 ---
 

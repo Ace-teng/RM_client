@@ -1,0 +1,21 @@
+# RoboMaster 自定义客户端 — Phase 1 最小依赖
+# 见总文档 §0.1 技术栈
+
+# QtPy 抽象层（必须）
+QtPy>=2.4.0
+
+# Qt 绑定四选一（至少装一个，QtPy 才能工作）：
+# 若本机有 Qt6，推荐：
+PyQt6>=6.4.0
+# 若用 Qt5，可改为：PyQt5>=5.15.0
+# 或：PySide6>=6.4.0 / PySide2>=5.15.0
+
+# Phase 2 赛事通信（MQTT）
+paho-mqtt>=2.0.0
+# Phase 3 协议解析（Protobuf v3）
+protobuf>=4.24.0
+
+# Phase 4 图传 HEVC 解码（可选；不装则图传区显示「图传未连接」）
+av>=10.0.0
+
+# Phase 2+ 设备间通信（标准库 socket 即可，无需额外包）
