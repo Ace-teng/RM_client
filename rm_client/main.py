@@ -8,6 +8,7 @@ Phase 2：MQTT 连接、订阅、接收数据日志打印。
 本地测试：加 --local 即连本机 MQTT(127.0.0.1:1883)。
 """
 import logging
+import time
 import os
 import sys
 
@@ -58,15 +59,23 @@ def main() -> int:
 
     window_ref = [None]
 
+    def _update_link_status(**kw) -> None:
+        ls = dc.link_status
+        ls.update(kw)
+        dc.link_status = ls
+
     def on_mqtt_connect() -> None:
+        _update_link_status(mqtt_connected=True)
         if window_ref[0]:
             window_ref[0].set_status_message("就绪 | DataCenter 已创建 | MQTT 已连接")
 
     def on_mqtt_disconnect() -> None:
+        _update_link_status(mqtt_connected=False)
         if window_ref[0]:
             window_ref[0].set_status_message("就绪 | DataCenter 已创建 | MQTT 未连接")
 
     def on_mqtt_message(topic: str, payload: bytes) -> None:
+        _update_link_status(mqtt_last_update=time.time())
         parse_referee_message(topic, payload, dc)
         logging.getLogger("rm_client").debug("MQTT [%s] %d bytes -> protocol", topic, len(payload))
 
@@ -89,6 +98,7 @@ def main() -> int:
     window_ref[0] = window
     # 若 MQTT 在窗口创建前已连接成功，on_connect 时 window 未就绪会漏更新，此处补检
     if mqtt_client.is_connected:
+        _update_link_status(mqtt_connected=True)
         window.set_status_message("就绪 | DataCenter 已创建 | MQTT 已连接")
     else:
         window.set_status_message("就绪 | DataCenter 已创建 | MQTT 连接中…")
@@ -103,6 +113,7 @@ def main() -> int:
 
     # Phase 4：图传 UDP 接收，协议层解析后写入 DataCenter.video_frame
     def on_video_udp(raw: bytes) -> None:
+        _update_link_status(video_last_update=time.time())
         on_video_packet(raw, dc)
 
     video_receiver = VideoUDPReceiver(VIDEO_UDP_PORT, on_packet_cb=on_video_udp)

@@ -18,6 +18,7 @@ VideoFrame = Any
 OverlayBoxes = List[Any]
 CalibrationResult = Any
 LinkStatus = Dict[str, Any]
+TacticalAdvice = Any  # 战术建议，见 tactical_advisor
 
 
 class DataCenter:
@@ -48,6 +49,7 @@ class DataCenter:
         self._overlay_boxes: OverlayBoxes = []
         self._calibration_result: Optional[CalibrationResult] = None
         self._link_status: LinkStatus = {}
+        self._tactical_advice: Optional[TacticalAdvice] = None
         self._initialized = True
 
     def _notify(self, key: str, value: Any) -> None:
@@ -144,3 +146,14 @@ class DataCenter:
         with self._lock_io:
             self._link_status = dict(value)
         self._notify("link_status", self._link_status)
+
+    @property
+    def tactical_advice(self) -> Optional[TacticalAdvice]:
+        with self._lock_io:
+            return self._tactical_advice
+
+    @tactical_advice.setter
+    def tactical_advice(self, value: Optional[TacticalAdvice]) -> None:
+        with self._lock_io:
+            self._tactical_advice = value
+        self._notify("tactical_advice", value)

@@ -8,10 +8,6 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QImage, QPixmap
 from qtpy.QtWidgets import (
     QFrame,
-    QGraphicsPixmapItem,
-    QGraphicsScene,
-    QGraphicsTextItem,
-    QGraphicsView,
     QHBoxLayout,
     QLabel,
     QMainWindow,
@@ -22,9 +18,12 @@ from qtpy.QtWidgets import (
 )
 
 from rm_client.ui.control.command_panel import CommandPanel
+from rm_client.ui.control.diagnostic_panel import DiagnosticPanel
 from rm_client.ui.control.game_state_panel import GameStatePanel
+from rm_client.ui.control.tactical_panel import TacticalPanel
 from rm_client.ui.radar.map_widget import MapWidget
 from rm_client.ui.radar.robot_status_list import RobotStatusList
+from rm_client.ui.video_area import VideoArea
 
 
 class MainWindow(QMainWindow):
@@ -53,27 +52,19 @@ class MainWindow(QMainWindow):
 
         splitter = QSplitter(Qt.Horizontal)
 
-        # 中心：图传显示（Phase 4）
-        self._graphics_view = QGraphicsView()
-        self._graphics_view.setStyleSheet("background: #1a1a1a;")
-        self._graphics_view.setMinimumWidth(640)
-        self._scene = QGraphicsScene(0, 0, 640, 360)
-        self._graphics_view.setScene(self._scene)
-        self._pixmap_item = QGraphicsPixmapItem()
-        self._scene.addItem(self._pixmap_item)
-        self._placeholder_text = QGraphicsTextItem("图传未连接")
-        self._placeholder_text.setDefaultTextColor(Qt.gray)
-        self._placeholder_text.setPos(260, 165)
-        self._scene.addItem(self._placeholder_text)
-        splitter.addWidget(self._graphics_view)
+        # 中心：图传显示 + 买活预警叠加（Phase 4 + 战术分析）
+        self._video_area = VideoArea()
+        splitter.addWidget(self._video_area)
 
-        # 右侧：赛事状态 + 态势图 + 机器人状态 + 赛事指令（Phase 4/5/6）
+        # 右侧：赛事状态 + 态势图 + 机器人状态 + 战术建议 + 赛事指令（Phase 4–7）
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
         right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.addWidget(DiagnosticPanel(self))
         right_layout.addWidget(GameStatePanel(self))
         right_layout.addWidget(MapWidget(self))
         right_layout.addWidget(RobotStatusList(self))
+        right_layout.addWidget(TacticalPanel(self))
         cs = self._command_sender
         right_layout.addWidget(
             CommandPanel(
@@ -111,13 +102,15 @@ class MainWindow(QMainWindow):
 
     def _on_video_frame(self, frame: object) -> None:
         """在 UI 线程更新图传画面。frame 为 QImage 或 None。"""
+        pi = self._video_area.pixmap_item
+        ph = self._video_area.placeholder_text
         if frame is not None and isinstance(frame, QImage):
-            self._pixmap_item.setPixmap(QPixmap.fromImage(frame))
-            self._pixmap_item.setVisible(True)
-            self._placeholder_text.setVisible(False)
+            pi.setPixmap(QPixmap.fromImage(frame))
+            pi.setVisible(True)
+            ph.setVisible(False)
         else:
-            self._pixmap_item.setVisible(False)
-            self._placeholder_text.setVisible(True)
+            pi.setVisible(False)
+            ph.setVisible(True)
 
     def _on_dc_update(self, key: str, value: object) -> None:
         """DataCenter 通知，通过 signal 转到 UI 线程。"""

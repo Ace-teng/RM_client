@@ -28,3 +28,8 @@ REFEREE_MQTT_CONNECT_TIMEOUT = 10
 
 # 图传 UDP（§1.5）：端口 3334，8 字节包头
 VIDEO_UDP_PORT = int(os.environ.get("VIDEO_UDP_PORT", "3334"))
+
+# 战术分析（见 docs/战术分析功能设计.md）
+TACTICAL_MY_TEAM = os.environ.get("TACTICAL_MY_TEAM", "blue")
+TACTICAL_HP_DIFF_THRESHOLD = int(os.environ.get("TACTICAL_HP_DIFF_THRESHOLD", "150"))
+TACTICAL_BUYBACK_ECONOMY_THRESHOLD = int(os.environ.get("TACTICAL_BUYBACK_ECONOMY_THRESHOLD", "1000"))
