@@ -1,3 +1,128 @@
+# RoboMaster 自定义客户端
+
+> Python + Qt 自定义比赛客户端，带高对比度 HUD 与操作手视图；同时包含一套 React HUD 预览，仅用于界面设计参考。
+
+---
+
+## 功能概览
+
+- **比赛用桌面客户端（Python / Qt）**
+  - 图传（FPV）显示 + 中央准心。
+  - 左上 HUD：己方 HP、电容、自瞄状态。
+  - 顶部 HUD：比赛时间、锁定目标距离。
+  - 右上 HUD：敌方 HP、能量、弹量。
+  - 底部 HUD：技能 CAP、热量条、时间/血量复显。
+  - 左下：固定小地图（态势图）+ 底盘状态 + 跳跃目标。
+  - 步兵专用顶栏 + 左/右侧信息面板。
+  - 英雄视图右侧精简状态面板 + 插件扩展区。
+  - 买活预警浮层（基于战术分析、比赛阶段与经济阈值）。
+
+- **Web HUD 预览（React / TypeScript）**
+  - 仅用于在浏览器中预览 HUD 布局和视觉风格。
+  - 不参与实际比赛，也不与 Python 客户端直接耦合。
+
+---
+
+## 仓库结构
+
+仅列出与本项目开发最相关的部分：
+
+```text
+客户端开发/
+├─ rm_client/                # 比赛用 Python 客户端（核心）
+│  ├─ core/                  # DataCenter + 业务 / 战术服务
+│  ├─ ui/
+│  │  ├─ main_window.py      # 主窗口：整体布局、左右面板、状态栏
+│  │  ├─ video_area.py       # 图传区域 + HUD + 小地图 + 买活浮层
+│  │  ├─ hud/                # HUD 控件与图传叠加层
+│  │  │  ├─ video_hud_overlay.py  # 用 QPainter 直接画在图传上的 HUD（实际可见）
+│  │  │  ├─ hud_overlay.py        # Widget 版 HUD 容器（挂各类 HUD 控件）
+│  │  │  ├─ *.py                 # 血条、电容、自瞄、底盘、哨兵信息、跳跃目标等组件
+│  │  ├─ control/            # 左/右侧面板、角色选择、诊断面板等
+│  │  ├─ radar/              # 小地图等雷达组件
+│  │  └─ styles/             # 主题色 + 旧版样式（兼容）
+│  └─ main.py                # Python 客户端入口
+│
+├─ docs/
+│  ├─ CustomClient_Architecture.md  # 架构说明（Python 客户端 vs Web 预览等）
+│  ├─ 功能与使用说明.md             # 现版 HUD 与界面功能手册（操作手视角）
+│  └─ 交接说明.md                   # 给开发同学的代码结构与注意事项（开发视角）
+│
+├─ package.json / vite.config.* / src/ ...
+│   # React HUD 预览工程，仅用于界面设计，不影响比赛客户端
+└─ ...
+```
+
+---
+
+## 运行方式
+
+### 1. 运行 Python 比赛客户端（推荐）
+
+环境要求：
+
+- Python 3.10+
+- 已安装项目依赖（通常通过 `pip install -r requirements.txt`，具体以仓库说明为准）
+
+在仓库根目录执行：
+
+```bash
+python -m rm_client.main --local
+```
+
+说明：
+
+- 会创建 `DataCenter` 单例，初始化 UI，并尝试建立 MQTT 连接。
+- 角色选择在右上角「角色」下拉框；选择步兵/英雄后，左/右侧面板和 HUD 会自动切换。
+
+### 2. 运行 Web HUD 预览（可选）
+
+> 仅供 UI 预览和调试布局，不参与实际比赛。
+
+在带有 `package.json` 的目录（通常是本仓库根目录或 `web/` 目录）执行：
+
+```bash
+npm install
+npm run dev
+```
+
+然后根据终端提示在浏览器打开对应地址（一般是 `http://localhost:5173` 一类端口）。
+
+---
+
+## 重要设计约定
+
+- **唯一数据源：`DataCenter`**
+  - 所有 HUD 与面板都从 `rm_client/core/model/datacenter.py` 读数据。
+  - 业务逻辑/战术判断写 DataCenter，UI 只负责展示。
+
+- **HUD 双轨实现**
+  - `video_hud_overlay.py`：负责**画在图传上的 HUD**（坐标、重叠问题都在这里调）。
+  - `hud_overlay.py` + 各组件：Widget 版 HUD，负责控件样式和更复杂的交互。
+
+- **Web 预览不影响 Python 客户端**
+  - React 代码只是设计稿；即使删掉，也不会影响 `python -m rm_client.main` 的运行。
+
+- **样式演进**
+  - 新的颜色主题集中在 `ui/styles/colors.py`（`HUDColors`）。
+  - `ui/styles/_legacy.py` 中包含旧版样式常量，用于兼容尚未重构的面板。
+
+---
+
+## 推荐阅读顺序（给新同学）
+
+1. 跑一遍 Python 客户端：`python -m rm_client.main --local`。  
+2. 对照界面阅读：`docs/功能与使用说明.md`，理解每个 HUD/面板的含义。  
+3. 阅读：`docs/交接说明.md`，掌握代码结构、数据流和注意事项。  
+4. 按需查看：`docs/CustomClient_Architecture.md`，了解更细的架构设计与阶段划分。  
+5. 如需调 UI 视觉，可跑一下 React HUD 预览，对比 Python 实现的差异。  
+
+---
+
+## 版权与许可
+
+本项目版权与使用许可请参考课程/比赛要求或仓库附带的 LICENSE 说明（如存在）。如需在其它项目中复用，请先与原作者/团队沟通。
+
 # RoboMaster 自定义客户端 / Custom Client
 
 **GitHub：** [https://github.com/Ace-teng/RM_client](https://github.com/Ace-teng/RM_client)
