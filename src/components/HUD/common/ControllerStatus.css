@@ -1,0 +1,26 @@
+.controller-status {
+  bottom: 200px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controller-status.disconnected {
+  border-color: var(--hud-danger);
+  animation: blink 0.5s infinite;
+}
+
+.controller-icon {
+  font-size: var(--font-size-md);
+}
+
+.controller-text {
+  font-size: var(--font-size-sm);
+}
+
+.controller-text.connected { color: var(--hud-primary); }
+.controller-text.disconnected {
+  color: var(--hud-danger);
+  font-weight: bold;
+}

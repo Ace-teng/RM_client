@@ -1,0 +1,38 @@
+.drone-mark {
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drone-mark-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: var(--hud-bg-dark);
+  border-radius: 4px;
+}
+
+.drone-label {
+  font-size: var(--font-size-sm);
+  width: 100px;
+}
+
+.drone-bar {
+  width: 100px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.drone-fill.ally { background: var(--hud-warning); }
+.drone-fill.enemy { background: var(--hud-danger); }
+
+.drone-value {
+  font-size: var(--font-size-sm);
+  width: 40px;
+}

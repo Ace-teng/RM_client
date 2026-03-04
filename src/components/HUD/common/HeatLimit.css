@@ -1,0 +1,39 @@
+.heat-limit {
+  bottom: 80px;
+  right: 200px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.heat-label {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.heat-bar {
+  width: 200px;
+  height: 8px;
+  position: relative;
+}
+
+.heat-fill {
+  background: linear-gradient(90deg,
+    var(--hud-primary) 0%,
+    var(--hud-warning) 60%,
+    var(--hud-danger) 100%
+  );
+}
+
+.heat-threshold {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 12px;
+  background: var(--hud-warning);
+}
+
+.heat-value {
+  font-size: var(--font-size-sm);
+  min-width: 60px;
+}

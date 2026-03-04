@@ -12,11 +12,12 @@ class RobotStatusList(QFrame):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setFrameStyle(QFrame.StyledPanel)
+        from rm_client.ui.styles import STYLE_PANEL, STYLE_PANEL_TITLE
+        self.setStyleSheet(STYLE_PANEL)
         layout = QVBoxLayout(self)
         layout.setSpacing(4)
-        title = QLabel("机器人状态")
-        title.setStyleSheet("font-weight: bold; font-size: 12px;")
+        title = QLabel("ROBOT STATUS")
+        title.setStyleSheet(STYLE_PANEL_TITLE)
         layout.addWidget(title)
         self._content = QLabel("—")
         self._content.setWordWrap(True)
@@ -31,7 +32,16 @@ class RobotStatusList(QFrame):
     def _refresh_from_dc(self) -> None:
         from rm_client.core.model.datacenter import DataCenter
 
-        rs = DataCenter().robot_states
+        dc = DataCenter()
+        # 步兵视图时，右侧可以简化信息，避免过于拥挤。
+        role = getattr(dc, "current_operator_role", "hero")
+        if role in ("infantry1", "infantry2"):
+            self.setVisible(False)
+            return
+        else:
+            self.setVisible(True)
+
+        rs = dc.robot_states
         if not rs:
             self._content.setText("—")
             return

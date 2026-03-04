@@ -1,0 +1,30 @@
+.pitch-angle {
+  top: 50px;
+  right: 150px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.yaw-angle {
+  top: 20px;
+  right: 100px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.angle-label {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: bold;
+}
+
+.angle-value {
+  font-size: var(--font-size-md);
+  font-family: var(--font-mono);
+}
+
+.angle-value.normal { color: var(--hud-primary); }
+.angle-value.warning { color: var(--hud-warning); }
+.angle-value.danger { color: var(--hud-danger); }

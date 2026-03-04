@@ -1,0 +1,52 @@
+.rune-reminder {
+  top: calc(50% + 120px);
+  right: 20px;
+  min-width: 100px;
+}
+
+.rune-title {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--hud-border);
+}
+
+.rune-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.rune-type {
+  font-size: var(--font-size-sm);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.rune-type.small {
+  background: var(--hud-info);
+  color: #000;
+}
+
+.rune-type.large {
+  background: var(--hud-purple);
+  color: #FFF;
+}
+
+.rune-timer {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  color: var(--hud-warning);
+}
+
+.rune-count {
+  font-size: var(--font-size-sm);
+  color: var(--hud-info);
+}
+
+.rune-inactive {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.4);
+}

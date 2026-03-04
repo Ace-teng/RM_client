@@ -1,0 +1,17 @@
+.match-timer {
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--font-size-xxl);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.match-timer.warning {
+  color: var(--hud-warning);
+}
+
+.match-timer.danger {
+  color: var(--hud-danger);
+  animation: blink 0.5s infinite;
+}

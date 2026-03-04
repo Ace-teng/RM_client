@@ -1,0 +1,28 @@
+.engineer-arm {
+  bottom: 200px;
+  left: 20px;
+  width: 120px;
+}
+
+.arm-title {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--hud-border);
+}
+
+.arm-joint,
+.arm-gripper {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: var(--font-size-sm);
+}
+
+.joint-value {
+  color: var(--hud-info);
+}
+
+.gripper-status.open { color: var(--hud-primary); }
+.gripper-status.closed { color: var(--hud-warning); }

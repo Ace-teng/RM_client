@@ -1,0 +1,156 @@
+/**
+ * RoboMaster 操作手客户端 HUD 全局样式
+ * 边缘化布局、深色主题、多兵种支持
+ */
+:root {
+  /* 主题色 */
+  --hud-primary: #00FF00;        /* 主要信息-绿色 */
+  --hud-warning: #FFAA00;        /* 警告-橙色 */
+  --hud-danger: #FF3333;         /* 危险-红色 */
+  --hud-info: #00AAFF;           /* 信息-蓝色 */
+  --hud-purple: #AA55FF;         /* 自瞄框-紫色 */
+  
+  /* 背景 */
+  --hud-bg-dark: rgba(0, 0, 0, 0.6);
+  --hud-bg-light: rgba(255, 255, 255, 0.1);
+  --hud-border: rgba(255, 255, 255, 0.2);
+  
+  /* 字体 */
+  --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 28px;
+  
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  
+  /* 层级（由低到高） */
+  --z-hud-base: 100;
+  --z-hud-crosshair: 150;
+  --z-hud-alert: 200;
+  --z-modal: 300;
+}
+
+/* 通用HUD元素基础样式 */
+.hud-element {
+  position: fixed;
+  z-index: var(--z-hud-base);
+  font-family: var(--font-mono);
+  color: #FFFFFF;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+/* 通用面板样式 */
+.hud-panel {
+  background: var(--hud-bg-dark);
+  border: 1px solid var(--hud-border);
+  border-radius: 4px;
+  padding: var(--spacing-sm);
+}
+
+/* 通用进度条容器 */
+.hud-bar {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--hud-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* 通用进度条填充 */
+.hud-bar-fill {
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+/* 动画：闪烁 */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* 动画：脉冲 */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* 动画：闪光警告 */
+@keyframes flash-warning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============================================================
+ * 布局位置规范（边缘化布局，中央仅图传+准心）
+ * ============================================================ */
+
+/* ----- 顶部区域 ----- */
+.position-top-left       { position: fixed; top: 20px; left: 20px; }           /* 己方血量 */
+.position-top-left-2     { position: fixed; top: 50px; left: 20px; }           /* 电容条 */
+.position-top-left-3     { position: fixed; top: 20px; left: 220px; }          /* 自瞄状态 */
+.position-top-center     { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); }  /* 比赛时间 */
+.position-top-right-2    { position: fixed; top: 20px; right: 220px; }          /* 能量限制 */
+.position-top-right      { position: fixed; top: 20px; right: 20px; }            /* 对方血量 */
+.position-top-right-3    { position: fixed; top: 50px; right: 20px; }           /* 发弹量 */
+
+/* ----- 中央区域（准心/瞄准） ----- */
+.position-center         { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }  /* 准心 */
+
+/* ----- 左侧边栏 ----- */
+.position-sidebar-left   { position: fixed; top: 50%; left: 20px; transform: translateY(-50%); }
+
+/* ----- 右侧边栏 ----- */
+.position-sidebar-right  { position: fixed; top: 50%; right: 20px; transform: translateY(-50%); }
+
+/* ----- 底部区域 ----- */
+.position-bottom-left    { position: fixed; bottom: 20px; left: 20px; }          /* 小地图 */
+.position-bottom-left-2  { position: fixed; bottom: 200px; left: 20px; }       /* 底盘状态 */
+.position-bottom-left-3  { position: fixed; bottom: 160px; left: 20px; }        /* 跳跃目标 */
+.position-bottom-left-4  { position: fixed; bottom: 120px; left: 20px; }        /* 大小符提醒 */
+.position-bottom-center  { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); }  /* 技能栏 */
+.position-bottom-right   { position: fixed; bottom: 20px; right: 20px; }         /* 悬浮窗/信息面板 */
+.position-bottom-right-2 { position: fixed; bottom: 80px; right: 200px; }       /* 热量条 */
+
+/* ----- 层级规范（z-index，由低到高） ----- */
+.z-base      { z-index: 100; }   /* 普通 HUD 元素 */
+.z-crosshair { z-index: 150; }   /* 准心、瞄准框 */
+.z-alert     { z-index: 200; }   /* 警告弹窗 */
+.z-modal     { z-index: 300; }   /* 模态窗口 */
+
+/* ============================================================
+ * 开发注意事项
+ * 1. 性能：动画仅使用 transform / opacity，避免触发重排
+ * 2. 深色模式：.hud-element 已统一 text-shadow 保证可读性
+ * 3. 位置微调：组件可扩展 PositionOffset { x?, y? } 做偏移
+ * ============================================================ */
+
+/* 深色模式文字可读性（与 .hud-element 一致，供自定义类使用） */
+.hud-text {
+  color: #FFFFFF;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* 响应式：高分辨率 */
+@media (min-width: 2560px) {
+  :root {
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 20px;
+  }
+}
+
+/* 响应式：小屏 */
+@media (max-width: 1280px) {
+  :root {
+    --font-size-sm: 10px;
+    --font-size-md: 12px;
+    --font-size-lg: 14px;
+  }
+}

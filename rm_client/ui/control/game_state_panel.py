@@ -5,31 +5,32 @@
 见总文档 §5.1、§7 Phase 4。
 """
 from qtpy.QtCore import QTimer
-from qtpy.QtWidgets import QFormLayout, QFrame, QLabel, QVBoxLayout, QWidget
+from qtpy.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
+
+from rm_client.ui.control.field_row import FieldRow
 
 
 class GameStatePanel(QFrame):
-    """右侧状态面板：从 DataCenter 只读 game_state，定时刷新显示。"""
+    """右侧状态面板：参考图圆角边框行。"""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setMaximumWidth(320)
-        self.setFrameStyle(QFrame.StyledPanel)
+        from rm_client.ui.styles import STYLE_PANEL, STYLE_PANEL_TITLE
+        self.setStyleSheet(STYLE_PANEL)
         layout = QVBoxLayout(self)
-        layout.setSpacing(8)
+        layout.setSpacing(6)
 
-        title = QLabel("赛事状态")
-        title.setStyleSheet("font-weight: bold; font-size: 14px;")
+        title = QLabel("MATCH STATUS")
+        title.setStyleSheet(STYLE_PANEL_TITLE)
         layout.addWidget(title)
 
-        form = QFormLayout()
-        self._phase_label = QLabel("—")
-        self._time_label = QLabel("—")
-        self._hp_placeholder = QLabel("—")
-        form.addRow("阶段 (phase):", self._phase_label)
-        form.addRow("剩余时间 (s):", self._time_label)
-        form.addRow("血量 (待协议):", self._hp_placeholder)
-        layout.addLayout(form)
+        self._row_phase = FieldRow("阶段 (phase):")
+        self._row_time = FieldRow("剩余时间 (s):")
+        self._row_hp = FieldRow("血量 (待协议):")
+        layout.addWidget(self._row_phase)
+        layout.addWidget(self._row_time)
+        layout.addWidget(self._row_hp)
 
         layout.addStretch()
 
@@ -43,10 +44,10 @@ class GameStatePanel(QFrame):
         dc = DataCenter()
         gs = dc.game_state
         if gs is None:
-            self._phase_label.setText("—")
-            self._time_label.setText("—")
-            self._hp_placeholder.setText("—")
+            self._row_phase.set_value("—")
+            self._row_time.set_value("—")
+            self._row_hp.set_value("—")
             return
-        self._phase_label.setText(str(getattr(gs, "game_phase", "?")))
-        self._time_label.setText(str(getattr(gs, "remaining_time_sec", "?")))
-        self._hp_placeholder.setText("(协议接入后显示)")
+        self._row_phase.set_value(str(getattr(gs, "game_phase", "?")))
+        self._row_time.set_value(str(getattr(gs, "remaining_time_sec", "?")))
+        self._row_hp.set_value("(协议接入后显示)")

@@ -1,0 +1,38 @@
+.aim-box {
+  position: fixed;
+  border: 2px solid var(--hud-purple);
+  pointer-events: none;
+  z-index: var(--z-hud-crosshair);
+}
+
+.aim-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--hud-purple);
+  border-style: solid;
+}
+
+.aim-corner.top-left {
+  top: -2px;
+  left: -2px;
+  border-width: 3px 0 0 3px;
+}
+
+.aim-corner.top-right {
+  top: -2px;
+  right: -2px;
+  border-width: 3px 3px 0 0;
+}
+
+.aim-corner.bottom-left {
+  bottom: -2px;
+  left: -2px;
+  border-width: 0 0 3px 3px;
+}
+
+.aim-corner.bottom-right {
+  bottom: -2px;
+  right: -2px;
+  border-width: 0 3px 3px 0;
+}

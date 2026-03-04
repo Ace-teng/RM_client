@@ -1,0 +1,41 @@
+.buff-container {
+  top: 100px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.buff-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+}
+
+.buff-icon {
+  font-size: var(--font-size-lg);
+}
+
+.buff-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.buff-type {
+  font-size: var(--font-size-sm);
+  color: var(--hud-info);
+}
+
+.buff-bonus {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.buff-timer {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  color: var(--hud-warning);
+  min-width: 30px;
+  text-align: right;
+}

@@ -1,0 +1,36 @@
+.respawn-info {
+  top: 200px;
+  right: 20px;
+  min-width: 140px;
+}
+
+.respawn-title {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--hud-border);
+}
+
+.respawn-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  gap: 8px;
+}
+
+.respawn-robot {
+  font-size: var(--font-size-sm);
+}
+
+.respawn-timer {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  color: var(--hud-warning);
+}
+
+.respawn-cost {
+  font-size: var(--font-size-xs);
+  color: var(--hud-info);
+}

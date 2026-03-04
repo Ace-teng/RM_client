@@ -1,0 +1,48 @@
+.damage-indicator {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  z-index: var(--z-hud-alert);
+}
+
+.damage-arrow {
+  position: absolute;
+  width: 80px;
+  height: 30px;
+  background: linear-gradient(to right, rgba(255, 0, 0, 0.8), transparent);
+  animation: damage-flash 0.3s ease-out;
+}
+
+.damage-arrow.top {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(-90deg);
+  transform-origin: center bottom;
+}
+
+.damage-arrow.bottom {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+  transform-origin: center top;
+}
+
+.damage-arrow.left {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.damage-arrow.right {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes damage-flash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}

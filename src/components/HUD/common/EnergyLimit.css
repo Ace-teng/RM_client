@@ -1,0 +1,32 @@
+.energy-limit {
+  top: 20px;
+  right: 220px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.energy-label {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.energy-bar {
+  width: 120px;
+  height: 8px;
+}
+
+.energy-fill {
+  background: var(--hud-primary);
+}
+
+.energy-fill.warning { background: var(--hud-warning); }
+.energy-fill.danger { background: var(--hud-danger); }
+
+.energy-value {
+  font-size: var(--font-size-sm);
+  min-width: 60px;
+}
+
+.energy-value.warning { color: var(--hud-warning); }
+.energy-value.danger { color: var(--hud-danger); }

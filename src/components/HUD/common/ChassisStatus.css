@@ -1,0 +1,23 @@
+.chassis-status {
+  bottom: 200px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.chassis-icon {
+  font-size: var(--font-size-md);
+}
+
+.chassis-text {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.chassis-text.unlocked { color: var(--hud-primary); }
+.chassis-text.locked { color: var(--hud-danger); }
+.chassis-text.low { color: #FFFFFF; }
+.chassis-text.high { color: var(--hud-warning); }

@@ -1,0 +1,29 @@
+.sentry-info {
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: 140px;
+}
+
+.sentry-title {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--hud-border);
+}
+
+.sentry-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: var(--font-size-sm);
+}
+
+.sentry-label {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sentry-value.target { color: var(--hud-warning); }
+.sentry-value.state { color: var(--hud-info); }
+.sentry-value.destination { color: var(--hud-primary); }

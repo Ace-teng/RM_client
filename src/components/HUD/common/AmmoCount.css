@@ -1,0 +1,32 @@
+.ammo-count {
+  top: 50px;
+  right: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--font-size-lg);
+}
+
+.ammo-icon {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.6);
+  margin-right: 4px;
+}
+
+.ammo-current {
+  font-weight: bold;
+  color: var(--hud-primary);
+}
+
+.ammo-current.low {
+  color: var(--hud-danger);
+  animation: blink 0.8s infinite;
+}
+
+.ammo-separator {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ammo-max {
+  color: rgba(255, 255, 255, 0.6);
+}

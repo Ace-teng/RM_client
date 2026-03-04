@@ -1,0 +1,21 @@
+.capacitor-bar {
+  top: 50px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.capacitor-container {
+  width: 300px;
+  height: 12px;
+}
+
+.capacitor-fill {
+  background: linear-gradient(90deg, #00AA00, #00FF00);
+}
+
+.capacitor-text {
+  font-size: var(--font-size-sm);
+  min-width: 40px;
+}

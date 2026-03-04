@@ -1,0 +1,45 @@
+.health-bar {
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.health-bar.ally { left: 20px; }
+.health-bar.enemy { right: 20px; align-items: flex-end; }
+
+.robot-type {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+}
+
+.health-container {
+  width: 180px;
+  height: 20px;
+}
+
+.health-fill.ally {
+  background: linear-gradient(90deg, #00AA00, #00FF00);
+}
+
+.health-fill.enemy {
+  background: linear-gradient(90deg, #AA0000, #FF3333);
+}
+
+.health-fill.low {
+  background: linear-gradient(90deg, #AA6600, #FFAA00);
+}
+
+.health-fill.critical {
+  background: linear-gradient(90deg, #AA0000, #FF3333);
+  animation: blink 0.5s infinite;
+}
+
+.health-text {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+}
+
+.health-text.low { color: var(--hud-warning); }
+.health-text.critical { color: var(--hud-danger); }

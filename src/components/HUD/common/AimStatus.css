@@ -1,0 +1,36 @@
+.aim-status {
+  top: 20px;
+  left: 220px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aim-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.aim-indicator.offline { background: #666666; }
+.aim-indicator.online { background: var(--hud-primary); }
+.aim-indicator.locked {
+  background: var(--hud-danger);
+  animation: pulse 0.5s infinite;
+}
+
+.aim-text {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.aim-text.offline { color: #666666; }
+.aim-text.online { color: var(--hud-primary); }
+.aim-text.locked { color: var(--hud-danger); }
+
+.aim-distance {
+  font-size: var(--font-size-sm);
+  color: var(--hud-info);
+  margin-left: 8px;
+}

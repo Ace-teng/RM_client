@@ -56,12 +56,16 @@ def update_tactical_advice(dc: DataCenter) -> None:
         else:
             advice.hp_suggestion = "谨慎"
 
-    # 经济与买活（占位：game_state 中若有 economy 等字段则解析）
+    # 经济与买活：仅当比赛进行中（game_phase 表示对局中）且对方经济达标时才触发买活预警，
+    # 避免一打开/占位数据就弹出；无 game_phase 或准备阶段不显示。
     gs = dc.game_state
     if gs is not None:
+        game_phase = getattr(gs, "game_phase", None)
+        # 0=准备/未开始，>0 表示比赛进行中（以赛事协议为准）
+        in_battle = game_phase is not None and int(game_phase) > 0
         enemy_economy = _get_enemy_economy(gs)
         if enemy_economy is not None:
-            if enemy_economy >= TACTICAL_BUYBACK_ECONOMY_THRESHOLD:
+            if enemy_economy >= TACTICAL_BUYBACK_ECONOMY_THRESHOLD and in_battle:
                 advice.buyback_alert = True
                 advice.economy_hint = "对方经济充足，可能买活"
             elif enemy_economy >= 500:

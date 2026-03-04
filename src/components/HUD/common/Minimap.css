@@ -1,0 +1,14 @@
+.minimap {
+  bottom: 20px;
+  left: 20px;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minimap-label {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.5);
+}

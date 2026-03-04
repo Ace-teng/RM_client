@@ -15,11 +15,12 @@ class TacticalPanel(QFrame):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setFrameStyle(QFrame.StyledPanel)
+        from rm_client.ui.styles import STYLE_PANEL, STYLE_PANEL_TITLE
+        self.setStyleSheet(STYLE_PANEL)
         layout = QVBoxLayout(self)
         layout.setSpacing(4)
-        title = QLabel("战术建议")
-        title.setStyleSheet("font-weight: bold; font-size: 12px;")
+        title = QLabel("TACTICAL ADVICE")
+        title.setStyleSheet(STYLE_PANEL_TITLE)
         layout.addWidget(title)
         self._hp_label = QLabel("—")
         self._hp_label.setWordWrap(True)

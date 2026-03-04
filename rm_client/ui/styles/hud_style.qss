@@ -1,0 +1,118 @@
+/* ===== 全局变量（通过 Python 代码设置） ===== */
+/* 主题色定义在 Python 中，这里用实际色值 */
+
+/* ===== 通用 HUD 元素 ===== */
+QLabel.hud-text {
+    color: #FFFFFF;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    background: transparent;
+}
+
+QLabel.hud-title {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+}
+
+/* ===== 面板样式 ===== */
+QFrame.hud-panel {
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+/* ===== 进度条 ===== */
+QProgressBar.hud-bar {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 10px;
+}
+
+QProgressBar.hud-bar::chunk {
+    border-radius: 1px;
+}
+
+/* 血量条 - 己方 */
+QProgressBar.health-ally::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #00AA00, stop:1 #00FF00);
+}
+
+/* 血量条 - 敌方 */
+QProgressBar.health-enemy::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #AA0000, stop:1 #FF3333);
+}
+
+/* 电容条 */
+QProgressBar.capacitor::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #00AA00, stop:1 #00FF00);
+}
+
+/* 热量条 */
+QProgressBar.heat::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #00FF00, stop:0.6 #FFAA00, stop:1 #FF3333);
+}
+
+/* ===== 状态指示器 ===== */
+QLabel.status-online {
+    color: #00FF00;
+}
+
+QLabel.status-offline {
+    color: #FF3333;
+}
+
+QLabel.status-warning {
+    color: #FFAA00;
+}
+
+/* ===== 比赛时间 ===== */
+QLabel.match-timer {
+    font-size: 28px;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+QLabel.match-timer-warning {
+    color: #FFAA00;
+}
+
+QLabel.match-timer-danger {
+    color: #FF3333;
+}
+
+/* ===== 自瞄状态 ===== */
+QLabel.aim-offline {
+    color: #666666;
+}
+
+QLabel.aim-online {
+    color: #00FF00;
+}
+
+QLabel.aim-locked {
+    color: #FF3333;
+}
+
+/* ===== 底盘状态 ===== */
+QLabel.chassis-unlocked {
+    color: #00FF00;
+}
+
+QLabel.chassis-locked {
+    color: #FF3333;
+}
+
+QLabel.chassis-low {
+    color: #FFFFFF;
+}
+
+QLabel.chassis-high {
+    color: #FFAA00;
+}

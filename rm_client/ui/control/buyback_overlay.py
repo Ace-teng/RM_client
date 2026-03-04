@@ -1,7 +1,9 @@
 """
 买活预警叠加层 — 屏幕中央醒目提醒「对方可能买活」。
 
-覆盖在图传区域中央，仅当 dc.tactical_advice.buyback_alert 为 True 时显示。
+覆盖在图传区域中央。仅当战术分析判定为「具体事件」时显示：
+即比赛进行中（game_phase > 0）且对方经济 ≥ 买活阈值时 tactical_advice.buyback_alert 为 True，
+一打开或占位数据不会触发。
 """
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtGui import QFont
@@ -17,14 +19,15 @@ class BuybackOverlay(QLabel):
         super().__init__(parent)
         self.setAlignment(Qt.AlignCenter)
         self.setStyleSheet(
-            "background-color: rgba(180, 0, 0, 0.85); color: white; "
-            "border: 3px solid white; border-radius: 8px; padding: 12px;"
+            "background-color: rgba(26, 26, 26, 0.95); color: #fef3c7; "
+            "border: 1px solid #f97316; border-radius: 8px; padding: 10px 24px;"
         )
         font = QFont()
-        font.setPointSize(18)
+        font.setPointSize(16)
         font.setBold(True)
         self.setFont(font)
-        self.setText("⚠ 注意：对方可能买活")
+        self.setText("⚠  注意：对方可能买活")
+        self.setMinimumWidth(280)
         self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         self.hide()
 

@@ -8,7 +8,6 @@ import time
 from qtpy.QtCore import QTimer
 from qtpy.QtWidgets import (
     QApplication,
-    QFormLayout,
     QFrame,
     QLabel,
     QPushButton,
@@ -16,31 +15,33 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
+from rm_client.ui.control.field_row import FieldRow
+
 
 class DiagnosticPanel(QFrame):
-    """右侧诊断面板：链路状态、最近更新时间、一键复制。"""
+    """右侧诊断面板：参考图圆角边框行，左标签右值。"""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setMaximumWidth(320)
-        self.setFrameStyle(QFrame.StyledPanel)
+        from rm_client.ui.styles import STYLE_PANEL, STYLE_PANEL_TITLE, STYLE_BTN, STYLE_VALUE_OK, STYLE_VALUE_BAD
+        self.setStyleSheet(STYLE_PANEL)
         layout = QVBoxLayout(self)
-        layout.setSpacing(8)
+        layout.setSpacing(6)
 
-        title = QLabel("链路诊断")
-        title.setStyleSheet("font-weight: bold; font-size: 14px;")
+        title = QLabel("LINK DIAGNOSIS")
+        title.setStyleSheet(STYLE_PANEL_TITLE)
         layout.addWidget(title)
 
-        form = QFormLayout()
-        self._mqtt_status_label = QLabel("—")
-        self._mqtt_update_label = QLabel("—")
-        self._video_update_label = QLabel("—")
-        form.addRow("MQTT 连接:", self._mqtt_status_label)
-        form.addRow("MQTT 数据:", self._mqtt_update_label)
-        form.addRow("图传数据:", self._video_update_label)
-        layout.addLayout(form)
+        self._row_mqtt = FieldRow("MQTT 连接:")
+        self._row_mqtt_data = FieldRow("MQTT 数据:")
+        self._row_video = FieldRow("图传数据:")
+        layout.addWidget(self._row_mqtt)
+        layout.addWidget(self._row_mqtt_data)
+        layout.addWidget(self._row_video)
 
         copy_btn = QPushButton("复制诊断信息")
+        copy_btn.setStyleSheet(STYLE_BTN)
         copy_btn.clicked.connect(self._copy_diagnostic)
         layout.addWidget(copy_btn)
 
@@ -64,14 +65,16 @@ class DiagnosticPanel(QFrame):
 
     def _refresh_from_dc(self) -> None:
         from rm_client.core.model.datacenter import DataCenter
+        from rm_client.ui.styles import STYLE_VALUE_OK, STYLE_VALUE_BAD
 
         dc = DataCenter()
         ls = dc.link_status
 
         mqtt_conn = ls.get("mqtt_connected", False)
-        self._mqtt_status_label.setText("已连接" if mqtt_conn else "未连接")
-        self._mqtt_update_label.setText(self._format_ago(ls.get("mqtt_last_update")))
-        self._video_update_label.setText(self._format_ago(ls.get("video_last_update")))
+        self._row_mqtt.set_value("已连接" if mqtt_conn else "未连接")
+        self._row_mqtt.set_value_style(STYLE_VALUE_OK if mqtt_conn else STYLE_VALUE_BAD)
+        self._row_mqtt_data.set_value(self._format_ago(ls.get("mqtt_last_update")))
+        self._row_video.set_value(self._format_ago(ls.get("video_last_update")))
 
     def _copy_diagnostic(self) -> None:
         from rm_client.core.model.datacenter import DataCenter

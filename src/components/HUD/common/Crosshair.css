@@ -1,0 +1,34 @@
+.crosshair {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: var(--z-hud-crosshair);
+  pointer-events: none;
+}
+
+.crosshair-svg {
+  fill: none;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+}
+
+.ramp-line {
+  position: absolute;
+  top: 50%;
+  width: 35px;
+  height: 0;
+  border-top: 2px solid var(--hud-primary);
+}
+
+.ramp-line.left {
+  right: 100%;
+  margin-right: 15px;
+  transform: rotate(15deg);
+  transform-origin: right center;
+}
+
+.ramp-line.right {
+  left: 100%;
+  margin-left: 15px;
+  transform: rotate(-15deg);
+  transform-origin: left center;
+}

@@ -1,0 +1,33 @@
+.low-hp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 90;
+}
+
+.low-hp-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.low-hp-ring {
+  width: 60px;
+  height: 60px;
+  border: 3px solid var(--hud-danger);
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+.low-hp-percent {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--font-size-sm);
+  color: var(--hud-danger);
+  font-weight: bold;
+  margin-top: 4px;
+}

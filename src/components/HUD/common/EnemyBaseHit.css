@@ -1,0 +1,23 @@
+.enemy-base-hit {
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 0, 0.2);
+  border: 1px solid var(--hud-primary);
+  border-radius: 4px;
+}
+
+.hit-text {
+  font-size: var(--font-size-md);
+  color: var(--hud-primary);
+}
+
+.hit-damage {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--hud-primary);
+}

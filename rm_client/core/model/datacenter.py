@@ -20,6 +20,9 @@ CalibrationResult = Any
 LinkStatus = Dict[str, Any]
 TacticalAdvice = Any  # 战术建议，见 tactical_advisor
 
+# 操作手调研展示状态（§0.6、操作.md），无协议时占位，有协议后由 protocol 写入
+from rm_client.core.model.operator_state import OperatorDisplayState
+
 
 class DataCenter:
     """
@@ -50,6 +53,8 @@ class DataCenter:
         self._calibration_result: Optional[CalibrationResult] = None
         self._link_status: LinkStatus = {}
         self._tactical_advice: Optional[TacticalAdvice] = None
+        self._operator_display_state: Optional[OperatorDisplayState] = None
+        self._current_operator_role: str = "hero"
         self._initialized = True
 
     def _notify(self, key: str, value: Any) -> None:
@@ -157,3 +162,25 @@ class DataCenter:
         with self._lock_io:
             self._tactical_advice = value
         self._notify("tactical_advice", value)
+
+    @property
+    def operator_display_state(self) -> Optional[OperatorDisplayState]:
+        with self._lock_io:
+            return self._operator_display_state
+
+    @operator_display_state.setter
+    def operator_display_state(self, value: Optional[OperatorDisplayState]) -> None:
+        with self._lock_io:
+            self._operator_display_state = value
+        self._notify("operator_display_state", value)
+
+    @property
+    def current_operator_role(self) -> str:
+        with self._lock_io:
+            return self._current_operator_role
+
+    @current_operator_role.setter
+    def current_operator_role(self, value: str) -> None:
+        with self._lock_io:
+            self._current_operator_role = str(value)
+        self._notify("current_operator_role", self._current_operator_role)

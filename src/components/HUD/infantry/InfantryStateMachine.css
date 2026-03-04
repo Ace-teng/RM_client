@@ -1,0 +1,22 @@
+.state-machine {
+  bottom: 240px;
+  left: 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.state-tag {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: var(--font-size-xs);
+  background: var(--hud-bg-dark);
+  border: 1px solid var(--hud-border);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.state-tag.active {
+  background: var(--hud-primary);
+  border-color: var(--hud-primary);
+  color: #000;
+  font-weight: bold;
+}

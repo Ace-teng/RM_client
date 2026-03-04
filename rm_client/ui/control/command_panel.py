@@ -19,29 +19,33 @@ class CommandPanel(QFrame):
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
-        self.setFrameStyle(QFrame.StyledPanel)
+        from rm_client.ui.styles import STYLE_PANEL, STYLE_PANEL_TITLE, STYLE_BTN
+        self.setStyleSheet(STYLE_PANEL)
         self._on_perf = on_performance_mode
         self._on_ammo = on_ammo_exchange
         self._on_air = on_air_support
 
         layout = QVBoxLayout(self)
         layout.setSpacing(8)
-        title = QLabel("赛事指令")
-        title.setStyleSheet("font-weight: bold; font-size: 14px;")
+        title = QLabel("QUICK COMMANDS")
+        title.setStyleSheet(STYLE_PANEL_TITLE)
         layout.addWidget(title)
 
         grid = QGridLayout()
         for i, mode_id in enumerate([1, 2, 3]):
             btn = QPushButton("性能体系 %s" % mode_id)
+            btn.setStyleSheet(STYLE_BTN)
             btn.clicked.connect(lambda checked=False, m=mode_id: self._do_performance(m))
             grid.addWidget(btn, 0, i)
         layout.addLayout(grid)
 
         btn_ammo = QPushButton("兑换发弹量")
+        btn_ammo.setStyleSheet(STYLE_BTN)
         btn_ammo.clicked.connect(self._do_ammo)
         layout.addWidget(btn_ammo)
 
         btn_air = QPushButton("空中支援")
+        btn_air.setStyleSheet(STYLE_BTN)
         btn_air.clicked.connect(self._do_air)
         layout.addWidget(btn_air)
 

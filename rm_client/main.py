@@ -49,13 +49,16 @@ def main() -> int:
     app = QApplication(sys.argv)
     app.setApplicationName("RoboMaster 自定义客户端")
     app.setApplicationDisplayName("RoboMaster 自定义客户端")
+    from rm_client.ui.styles import apply_app_style
+    apply_app_style(app)
 
     # 单例数据中心（R-ARCH-002 唯一数据源）
     dc = DataCenter()
 
     # Phase 5：注入占位 robot_states，便于态势图展示；协议接入后由 protocol 覆盖
-    from rm_client.core.service.demo_data import inject_demo_robot_states
+    from rm_client.core.service.demo_data import inject_demo_robot_states, inject_operator_display_state
     inject_demo_robot_states()
+    inject_operator_display_state()
 
     window_ref = [None]
 
