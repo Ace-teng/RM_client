@@ -84,16 +84,30 @@ class HUDOverlay(QWidget):
         # ========== 中央 ==========
         self.crosshair.move(cx - 40, cy - 40)
 
-        # ========== 左下角：小地图在 VideoArea 内固定 (20, h-180) 160×160；底盘/跳跃 strictly 在小地图上方，避免压住 ==========
+        # ========== 左下角布局修复：小地图最下，其余在小地图上方垂直排列，无重叠 ==========
+        MINIMAP_SIZE = 160
+        MINIMAP_MARGIN = 20
         if hasattr(self, "minimap") and self.minimap is not None:
-            self.minimap.move(20, h - 180)
-        # 底盘、跳跃目标在小地图正上方垂直排列，与 minimap 顶边留出间距
-        self.chassis_status.move(20, h - 220)   # 底盘底部约 h-180，不压小地图
+            self.minimap.move(MINIMAP_MARGIN, h - MINIMAP_SIZE - MINIMAP_MARGIN)
+        left_bottom_x = MINIMAP_MARGIN
+        y_above_minimap = h - MINIMAP_SIZE - MINIMAP_MARGIN - 15
+        if hasattr(self, "chassis_status") and self.chassis_status is not None:
+            chassis_height = self.chassis_status.height() if self.chassis_status.height() > 0 else 35
+            y_above_minimap -= chassis_height
+            self.chassis_status.move(left_bottom_x, y_above_minimap)
+            y_above_minimap -= 10
         if self.jump_target is not None:
-            self.jump_target.move(20, h - 265)  # 跳跃目标在底盘上方
+            jump_height = self.jump_target.height() if self.jump_target.height() > 0 else 30
+            y_above_minimap -= jump_height
+            self.jump_target.move(left_bottom_x, y_above_minimap)
+            y_above_minimap -= 10
+        if hasattr(self, "state_machine") and self.state_machine is not None:
+            state_height = self.state_machine.height() if self.state_machine.height() > 0 else 25
+            y_above_minimap -= state_height
+            self.state_machine.move(left_bottom_x, y_above_minimap)
 
-        # ========== 右侧（仅图传区内）：哨兵等信息稍往左收，不贴边 ==========
-        self.sentry_info.move(w - 155, cy - 70)
+        # ========== 右侧（仅图传区内）：哨兵面板贴右边缘，留 20px 边距 ==========
+        self.sentry_info.move(w - self.sentry_info.width() - 20, cy - 60)
 
         # ========== 右下角（调试面板，若存在） ==========
         if hasattr(self, "debug_panel") and self.debug_panel is not None:
