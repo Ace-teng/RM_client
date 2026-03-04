@@ -10,11 +10,11 @@ from rm_client.ui.control.buyback_overlay import BuybackOverlay
 from rm_client.ui.hud.video_hud_overlay import VideoHudOverlay
 from rm_client.ui.radar.map_widget import MapWidget
 
-# 修改4：小地图固定左下角样式
+# 修改4：小地图固定左下角，弱化黑框
 STYLE_MINIMAP_CONTAINER = """
     QFrame {
-        background-color: rgba(0, 0, 0, 0.6);
-        border: 2px solid rgba(255, 255, 255, 0.25);
+        background-color: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 8px;
     }
 """

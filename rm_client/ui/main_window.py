@@ -113,9 +113,9 @@ class MainWindow(QMainWindow):
         self._video_frame_signal.connect(self._on_video_frame)
         self.set_status_message("就绪 | DataCenter 已创建 | MQTT 连接中…")
 
-        # HUD 叠加层：覆盖在中央区域最上层
-        self._hud_overlay = HUDOverlay(robot_type="infantry1", parent=self.centralWidget())
-        self._hud_overlay.setGeometry(self.centralWidget().rect())
+        # HUD 叠加层：只覆盖图传区域，不盖住右侧栏，避免右上角黑框/重叠
+        self._hud_overlay = HUDOverlay(robot_type="infantry1", parent=self._video_area)
+        self._hud_overlay.setGeometry(self._video_area.rect())
         self._hud_overlay.raise_()
 
         from rm_client.core.model.datacenter import DataCenter
@@ -173,7 +173,7 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event) -> None:
         super().resizeEvent(event)
         if hasattr(self, "_hud_overlay") and self._hud_overlay is not None:
-            self._hud_overlay.setGeometry(self.centralWidget().rect())
+            self._hud_overlay.setGeometry(self._video_area.rect())
 
     def set_status_message(self, msg: str) -> None:
         self.statusBar().showMessage(msg)

@@ -19,16 +19,17 @@ NEON_ORANGE = QColor(255, 170, 0)
 TEXT_LIGHT = QColor(229, 231, 235)
 HUD_LINE_COLOR = QColor(200, 220, 255)
 
-# 左上角垂直排列，间距≥35px，避免重叠
+# 左上角垂直排列，间距拉大避免重叠，不画黑底
 M = 20
 TOP_LEFT = (M, 20)           # 第1行：己方血量
-TOP_LEFT_2 = (M, 75)         # 第2行：电容条（20+55）
-TOP_LEFT_3 = (M, 115)        # 第3行：自瞄状态（75+40）
+TOP_LEFT_2 = (M, 88)         # 第2行：电容条（血量区下留足间距）
+TOP_LEFT_3 = (M, 152)        # 第3行：自瞄状态（电容区下留足间距）
 
-# 右上角垂直排列
-RIGHT_Y1 = 20                # 敌方血量
-RIGHT_Y2 = 75                # 能量 / 发弹量
-RIGHT_Y3 = 110
+# 右上角垂直排列，距右边缘留白
+RIGHT_MARGIN = 24
+RIGHT_Y1 = 20
+RIGHT_Y2 = 78
+RIGHT_Y3 = 136
 
 BOTTOM_RIGHT_2 = (200, 80)   # 热量条 right 200, bottom 80
 
@@ -88,31 +89,27 @@ class VideoHudOverlay(QWidget):
         p.setFont(font)
         p.drawText(x, y + 14, f"HP {state.hp_self}")
         bar_w, bar_h = 100, 6
-        p.setPen(Qt.NoPen)
-        p.setBrush(QBrush(QColor(40, 40, 40)))
-        p.drawRoundedRect(x, y + 18, bar_w, bar_h, 3, 3)
         fill = max(0, min(1.0, state.hp_self / 600.0)) * bar_w
+        # 不画黑底，只画绿色填充，避免黑框遮盖
         if fill > 0:
+            p.setPen(Qt.NoPen)
             p.setBrush(QBrush(NEON_GREEN))
             p.drawRoundedRect(x, y + 18, int(fill), bar_h, 3, 3)
 
     def _draw_capacitor_bar_top(self, p: QPainter, state, w: int, h: int) -> None:
-        """左上第二行 .position-top-left-2：电容条"""
+        """左上第二行：电容条，不画黑底只画填充+文字"""
         x, y = TOP_LEFT_2[0], TOP_LEFT_2[1]
         bar_w, bar_h = 180, 8
-        p.setPen(QPen(QColor(51, 65, 85), 1))
-        p.setBrush(QBrush(QColor(30, 41, 59)))
-        p.drawRoundedRect(x, y, bar_w, bar_h, 3, 3)
         fill_w = max(0, int(bar_w * state.capacitor_pct))
         if fill_w > 0:
-            p.setBrush(QBrush(NEON_CYAN))
             p.setPen(Qt.NoPen)
+            p.setBrush(QBrush(NEON_CYAN))
             p.drawRoundedRect(x, y, fill_w, bar_h, 3, 3)
         p.setPen(TEXT_LIGHT)
         font = QFont()
         font.setPointSize(9)
         p.setFont(font)
-        p.drawText(x, y + bar_h + 12, f"电容 {int(state.capacitor_pct * 100)}%")
+        p.drawText(x, y + bar_h + 10, f"电容 {int(state.capacitor_pct * 100)}%")
 
     def _draw_aim_status(self, p: QPainter, state, w: int, h: int) -> None:
         """左 .position-top-left-3：自瞄状态 (left 220)"""
@@ -141,8 +138,8 @@ class VideoHudOverlay(QWidget):
         p.drawText((w - rect.width()) // 2, 16 + 14, text)
 
     def _draw_energy_limit(self, p: QPainter, state, w: int, h: int) -> None:
-        """右上第2行：能量限制，与敌方血量垂直错开"""
-        x = w - 220 - 80
+        """右上第2行：能量限制，距右留白"""
+        x = w - RIGHT_MARGIN - 100
         y = RIGHT_Y2
         text = f"能量 {int(state.energy_current)}/{int(state.energy_limit)}"
         font = QFont()
@@ -152,7 +149,7 @@ class VideoHudOverlay(QWidget):
         p.drawText(x, y + 14, text)
 
     def _draw_enemy_hp(self, p: QPainter, state, w: int, h: int) -> None:
-        """右上第1行：对方血量"""
+        """右上第1行：对方血量，距右边缘留白"""
         text = f"敌 HP {state.hp_enemy}"
         font = QFont()
         font.setPointSize(11)
@@ -160,17 +157,17 @@ class VideoHudOverlay(QWidget):
         p.setFont(font)
         p.setPen(NEON_RED)
         tw = p.fontMetrics().horizontalAdvance(text)
-        p.drawText(w - M - tw, RIGHT_Y1 + 14, text)
+        p.drawText(w - RIGHT_MARGIN - tw, RIGHT_Y1 + 14, text)
 
     def _draw_ammo(self, p: QPainter, state, w: int, h: int) -> None:
-        """右上第3行：发弹量，在能量下方"""
+        """右上第3行：发弹量，在能量下方，距右留白"""
         text = f"弹 {state.ammo_count}/{state.ammo_limit}"
         font = QFont()
         font.setPointSize(10)
         p.setFont(font)
         p.setPen(TEXT_LIGHT)
         tw = p.fontMetrics().horizontalAdvance(text)
-        p.drawText(w - M - tw, RIGHT_Y3 + 14, text)
+        p.drawText(w - RIGHT_MARGIN - tw, RIGHT_Y3 + 14, text)
 
     def _draw_target_info_top(self, p: QPainter, state, w: int, h: int) -> None:
         """顶部居中：目标距离（仅锁定时），在比赛时间下方"""
@@ -184,7 +181,7 @@ class VideoHudOverlay(QWidget):
         p.setFont(font)
         p.setPen(NEON_CYAN)
         rect = p.boundingRect(QRect(0, 0, w, 20), Qt.AlignCenter, text)
-        p.drawText((w - rect.width()) // 2, 50, text)
+        p.drawText((w - rect.width()) // 2, 56, text)  # 在比赛时间下方留足间距，避免重叠
 
     def _draw_heat_bar(self, p: QPainter, state, w: int, h: int) -> None:
         """底部偏右：热量条，文字在条上方不重叠"""
@@ -198,14 +195,11 @@ class VideoHudOverlay(QWidget):
         font.setPointSize(9)
         p.setFont(font)
         p.drawText(x, text_y, f"热量 {state.heat_current}/{state.heat_limit}")
-        p.setPen(QPen(QColor(51, 65, 85), 1))
-        p.setBrush(QBrush(QColor(30, 41, 59)))
-        p.drawRoundedRect(x, bar_y, bar_w, bar_h, 3, 3)
         heat_pct = state.heat_limit and (state.heat_current / state.heat_limit) or 0
         fill_w = max(0, min(1.0, heat_pct)) * bar_w
         if fill_w > 0:
-            p.setBrush(QBrush(NEON_ORANGE))
             p.setPen(Qt.NoPen)
+            p.setBrush(QBrush(NEON_ORANGE))
             p.drawRoundedRect(x, bar_y, int(fill_w), bar_h, 3, 3)
 
     def _draw_skill_bar(self, p: QPainter, state, w: int, h: int) -> None:
@@ -220,13 +214,10 @@ class VideoHudOverlay(QWidget):
         font.setPointSize(9)
         p.setFont(font)
         p.drawText(cx - 30, text_y, f"技能 CAP {int(state.capacitor_pct * 100)}%")
-        p.setPen(QPen(QColor(51, 65, 85), 1))
-        p.setBrush(QBrush(QColor(30, 41, 59)))
-        p.drawRoundedRect(x, bar_y, bar_w, bar_h, 3, 3)
         fill_w = max(0, int(bar_w * state.capacitor_pct))
         if fill_w > 0:
-            p.setBrush(QBrush(NEON_CYAN))
             p.setPen(Qt.NoPen)
+            p.setBrush(QBrush(NEON_CYAN))
             p.drawRoundedRect(x, bar_y, fill_w, bar_h, 3, 3)
 
     def _draw_info_panel(self, p: QPainter, state, w: int, h: int) -> None:
@@ -240,7 +231,7 @@ class VideoHudOverlay(QWidget):
         line1 = f"TIME {mm:02d}:{ss:02d}"
         line2 = f"HP {state.hp_self}/{state.hp_enemy}"
         tw = max(p.fontMetrics().horizontalAdvance(line1), p.fontMetrics().horizontalAdvance(line2))
-        x = w - M - tw
+        x = w - RIGHT_MARGIN - tw
         y = h - M - 28
         p.drawText(x, y, line1)
         p.drawText(x, y + 16, line2)

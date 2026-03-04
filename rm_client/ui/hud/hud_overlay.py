@@ -64,7 +64,8 @@ class HUDOverlay(QWidget):
 
         self.aim_status.move(20, y_offset)
 
-        # ========== 顶部中央 ==========
+        # ========== 顶部中央：时间由 VideoHudOverlay 绘制，此处隐藏控件避免与 5:28/7:00 重叠 ==========
+        self.match_timer.setVisible(False)
         self.match_timer.move(cx - 50, 16)
 
         # ========== 右上角（垂直排列，不重叠） ==========
@@ -83,17 +84,16 @@ class HUDOverlay(QWidget):
         # ========== 中央 ==========
         self.crosshair.move(cx - 40, cy - 40)
 
-        # ========== 左下角 ==========
+        # ========== 左下角：小地图在 VideoArea 内固定 (20, h-180) 160×160；底盘/跳跃 strictly 在小地图上方，避免压住 ==========
         if hasattr(self, "minimap") and self.minimap is not None:
             self.minimap.move(20, h - 180)
-
-        self.chassis_status.move(200, h - 60)
-
+        # 底盘、跳跃目标在小地图正上方垂直排列，与 minimap 顶边留出间距
+        self.chassis_status.move(20, h - 220)   # 底盘底部约 h-180，不压小地图
         if self.jump_target is not None:
-            self.jump_target.move(200, h - 100)
+            self.jump_target.move(20, h - 265)  # 跳跃目标在底盘上方
 
-        # ========== 右侧边栏（中部） ==========
-        self.sentry_info.move(w - 160, cy - 60)
+        # ========== 右侧（仅图传区内）：哨兵等信息稍往左收，不贴边 ==========
+        self.sentry_info.move(w - 155, cy - 70)
 
         # ========== 右下角（调试面板，若存在） ==========
         if hasattr(self, "debug_panel") and self.debug_panel is not None:

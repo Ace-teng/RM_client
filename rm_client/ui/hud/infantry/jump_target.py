@@ -13,8 +13,8 @@ class JumpTarget(QFrame):
     def _setup_ui(self) -> None:
         self.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 0, 0, 0.6);
-                border: 1px solid rgba(255, 255, 255, 0.2);
+                background-color: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.25);
                 border-radius: 4px;
             }
         """)
